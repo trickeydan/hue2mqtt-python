@@ -13,6 +13,9 @@ from signal import SIGHUP, SIGINT, SIGTERM
 from types import FrameType
 from typing import Optional
 
+import aiohttp
+import aiohue
+
 from hue2mqtt import __version__
 
 from .config import Hue2MQTTConfig
@@ -96,4 +99,22 @@ class Hue2MQTT():
 
     async def main(self) -> None:
         """Main method of the data component."""
-        await self._stop_event.wait()
+        async with aiohttp.ClientSession() as session:
+            bridge = aiohue.Bridge(
+                self.config.hue.ip,
+                session,
+                username=self.config.hue.username,
+            )
+            LOGGER.info(f"Connecting to Hue Bridge at {self.config.hue.ip}")
+            try:
+                await bridge.initialize()
+            except aiohue.errors.Unauthorized:
+                LOGGER.error("Bridge rejected username. Please use --discover")
+                self.halt()
+                return
+
+            LOGGER.info(f"Bridge Name: {bridge.config.name}")
+            LOGGER.info(f"Bridge MAC: {bridge.config.mac}")
+            LOGGER.info(f"API Version: {bridge.config.apiversion}")
+
+            await self._stop_event.wait()
