@@ -2,6 +2,39 @@
 
 Python Hue to MQTT Bridge
 
+## What and Why?
+
+Hue2MQTT lets you control your Hue setup using MQTT and publishes the current state in real-time.
+
+- Python 3.8+ with type hints and asyncio
+- Uses the excellent [aiohue](https://github.com/home-assistant-libs/aiohue) library to communicate with Hue.
+- Control your lights using MQTT
+- Receive live events (i.e button pushes, motion sensors) in real-time.
+- No polling your Hue Bridge for changes
+- IPv6 Support
+
+## Configuration
+
+Hue2MQTT is configured using `hue2mqtt.toml`.
+
+```toml
+# Hue2MQTT Default Config File
+
+[mqtt]
+host = "::1"
+port = 1883
+enable_tls = false
+force_protocol_version_3_1 = true
+
+topic_prefix = "hue2mqtt"
+
+[hue]
+ip = "192.0.2.2"  # or IPv6: "[2001:db0::1]"
+username = "some secret here"
+```
+
+If you do not know the username for your bridge, find it using `hue2mqtt --discover`.
+
 ## Contributions
 
 This project is released under the MIT Licence. For more information, please see LICENSE.
