@@ -58,7 +58,7 @@ def test_wrapper_last_will_message_null() -> None:
 def test_wrapper_mqtt_prefix() -> None:
     """Test that the MQTT prefix is as expected."""
     wr = MQTTWrapper("foo", BROKER_INFO)
-    assert wr.mqtt_prefix == "hue2mqtt/foo"
+    assert wr.mqtt_prefix == "hue2mqtt"
 
 
 def test_subscribe() -> None:
@@ -128,7 +128,7 @@ async def test_publish_send_and_receive() -> None:
 
     wr_sub = MQTTWrapper("foo", BROKER_INFO)
     wr_pub = MQTTWrapper("bar", BROKER_INFO)
-    wr_sub.subscribe("bar/bees/+", test_handler)
+    wr_sub.subscribe("bees/+", test_handler)
     await wr_sub.connect()
     await wr_pub.connect()
 
@@ -153,7 +153,7 @@ async def test_publish_send_and_receive_on_self() -> None:
 
     wr_sub = MQTTWrapper("foo", BROKER_INFO)
     wr_pub = MQTTWrapper("bar", BROKER_INFO)
-    wr_sub.subscribe("bar", test_handler)
+    wr_sub.subscribe("", test_handler)
     await wr_sub.connect()
     await wr_pub.connect()
 

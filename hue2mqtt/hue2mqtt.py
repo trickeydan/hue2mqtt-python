@@ -17,6 +17,7 @@ import aiohttp
 import aiohue
 
 from hue2mqtt import __version__
+from hue2mqtt.messages import BridgeStatusInfo, Hue2MQTTStatus
 
 from .config import Hue2MQTTConfig
 from .mqtt.wrapper import MQTTWrapper
@@ -76,6 +77,7 @@ class Hue2MQTT():
         self._mqtt = MQTTWrapper(
             self.name,
             self.config.mqtt,
+            last_will=Hue2MQTTStatus(online=False),
         )
 
     def _exit(self, signals: signal.Signals, frame_type: FrameType) -> None:
@@ -89,32 +91,45 @@ class Hue2MQTT():
         await self.main()
 
         LOGGER.info("Disconnecting from MQTT Broker")
+        self._mqtt.publish("status", Hue2MQTTStatus(online=False))
         await self._mqtt.disconnect()
 
-    def halt(self, *, silent: bool = False) -> None:
+    def halt(self) -> None:
         """Stop the component."""
-        if not silent:
-            LOGGER.info("Halting")
+        LOGGER.info("Halting Hue2MQTT")
         self._stop_event.set()
+
+    async def _publish_bridge_info(self) -> None:
+        """Publish info about the Hue Bridge."""
+        LOGGER.info(f"Bridge Name: {self._bridge.config.name}")
+        LOGGER.info(f"Bridge MAC: {self._bridge.config.mac}")
+        LOGGER.info(f"API Version: {self._bridge.config.apiversion}")
+
+        info = BridgeStatusInfo(
+            name=self._bridge.config.name,
+            mac_address=self._bridge.config.mac,
+            api_version=self._bridge.config.apiversion,
+        )
+        message = Hue2MQTTStatus(online=True, bridge=info)
+
+        self._mqtt.publish("status", message)
 
     async def main(self) -> None:
         """Main method of the data component."""
         async with aiohttp.ClientSession() as session:
-            bridge = aiohue.Bridge(
+            self._bridge = aiohue.Bridge(
                 self.config.hue.ip,
                 session,
                 username=self.config.hue.username,
             )
             LOGGER.info(f"Connecting to Hue Bridge at {self.config.hue.ip}")
             try:
-                await bridge.initialize()
+                await self._bridge.initialize()
             except aiohue.errors.Unauthorized:
                 LOGGER.error("Bridge rejected username. Please use --discover")
                 self.halt()
                 return
 
-            LOGGER.info(f"Bridge Name: {bridge.config.name}")
-            LOGGER.info(f"Bridge MAC: {bridge.config.mac}")
-            LOGGER.info(f"API Version: {bridge.config.apiversion}")
+            await self._publish_bridge_info()
 
             await self._stop_event.wait()

@@ -60,7 +60,7 @@ class MQTTWrapper:
         """Last will and testament message for this client."""
         if self._last_will is not None:
             return gmqtt.Message(
-                self.mqtt_prefix,
+                self.mqtt_prefix + "/" + "status",
                 self._last_will.json(),
                 retain=True,
             )
@@ -70,7 +70,7 @@ class MQTTWrapper:
     @property
     def mqtt_prefix(self) -> str:
         """The topic prefix for MQTT."""
-        return f"{self._broker_info.topic_prefix}/{self._client_name}"
+        return self._broker_info.topic_prefix
 
     async def connect(self) -> None:
         """Connect to the broker."""
@@ -136,7 +136,6 @@ class MQTTWrapper:
         *,
         retain: bool = False,
         auto_prefix_topic: bool = True,
-        auto_prefix_client_name: bool = True,
     ) -> None:
         """Publish a payload to the broker."""
         if not self.is_connected:
@@ -144,10 +143,7 @@ class MQTTWrapper:
                 "Attempted to publish message, but client is not connected.",
             )
 
-        if auto_prefix_client_name:
-            prefix = self.mqtt_prefix
-        else:
-            prefix = self._broker_info.topic_prefix
+        prefix = self._broker_info.topic_prefix
 
         if len(topic) == 0:
             topic_complete = Topic.parse(prefix)
