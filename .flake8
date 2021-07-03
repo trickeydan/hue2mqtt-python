@@ -1,0 +1,17 @@
+[flake8]
+exclude =
+    .git,
+    .pybuild,
+    .eggs,
+    __pycache__,
+    .venv
+
+ignore =
+    #Don't require docstrings on magic methods.
+    D105,
+    #Don't require docstrings for __init__ methods.
+    D107
+    #Don't require imperative mood docstrings.
+    D401
+
+max_line_length = 90

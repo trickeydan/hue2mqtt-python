@@ -1,0 +1,39 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python: [3.8, 3.9]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install APT dependencies
+        run: sudo apt install graphviz mosquitto
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Use in-project virtualenv
+        run: poetry config virtualenvs.in-project true
+      - uses: actions/cache@v2
+        with:
+          path: .venv/
+          key: ${{ runner.os }}-${{ matrix.python }}-pip-${{ hashFiles('poetry.lock') }}-${{ hashFiles('pyproject.toml') }}
+      - name: Install dependencies
+        run: poetry install
+      - name: Lint
+        run: make lint
+      - name: Static type checking
+        run: make type
+      - name: Unit tests
+        run: make test-cov
