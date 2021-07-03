@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - name: Install APT dependencies
-        run: sudo apt install graphviz mosquitto
+        run: sudo apt install mosquitto
       - name: Install Poetry
         run: pip install poetry
       - name: Use in-project virtualenv

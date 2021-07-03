@@ -15,6 +15,10 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
+gmqtt = "^0.6.9"
+aiohue = "^2.5.1"
+pydantic = "^1.8.2"
+toml = "^0.10.2"
 
 [tool.poetry.dev-dependencies]
 flake8 = "*"
@@ -30,6 +34,8 @@ pytest = "*"
 pytest-cov = "*"
 rope = "*"
 isort = {version = "*",extras = ["pyproject"]}
+types-toml = "^0.1.3"
+pytest-asyncio = "^0.15.1"
 
 [build-system]
 requires = ["poetry>=0.12"]

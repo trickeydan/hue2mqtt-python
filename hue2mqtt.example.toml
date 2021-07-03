@@ -1,0 +1,13 @@
+# Hue2MQTT Default Config File
+
+[mqtt]
+host = "::1"
+port = 1883
+enable_tls = false
+force_protocol_version_3_1 = true
+
+topic_prefix = "hue2mqtt"
+
+[hue]
+ip = "192.0.2.2"
+username = "some secret here"

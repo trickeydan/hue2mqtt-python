@@ -20,7 +20,7 @@ test-cov:
 	$(CMD) pytest --cov=$(PYMODULE) $(TESTS) --cov-report html
 
 isort:
-	$(CMD) isort --recursive $(PYMODULE) $(TESTS) $(EXTRACODE)
+	$(CMD) isort $(PYMODULE) $(TESTS) $(EXTRACODE)
 
 clean:
 	git clean -Xdf # Delete all files in .gitignore
