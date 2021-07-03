@@ -13,8 +13,8 @@ from toml import load
 class HueBridgeInfo(BaseModel):
     """MQTT Broker Information."""
 
-    bridge_ip: str
-    bridge_username: str
+    ip: str
+    username: str
 
     class Config:
         """Pydantic config."""
