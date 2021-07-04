@@ -69,8 +69,6 @@ class Hue2MQTT():
             LOGGER.info(f"Hue2MQTT v{__version__} - {self.__doc__}")
 
     def _setup_event_loop(self) -> None:
-        self._stop_event = asyncio.Event()
-
         loop.add_signal_handler(SIGHUP, self.halt)
         loop.add_signal_handler(SIGINT, self.halt)
         loop.add_signal_handler(SIGTERM, self.halt)
@@ -97,17 +95,16 @@ class Hue2MQTT():
                 LOGGER.error("Bridge rejected username. Please use --discover")
                 self.halt()
                 return
-            await self._publish_bridge_info()
+            await self._publish_bridge_status()
             await self.main(websession)
 
         LOGGER.info("Disconnecting from MQTT Broker")
-        await self._publish_bridge_info(online=False)
+        await self._publish_bridge_status(online=False)
         await self._mqtt.disconnect()
 
     def halt(self) -> None:
         """Stop the component."""
-        LOGGER.info("Halting Hue2MQTT")
-        self._stop_event.set()
+        sys.exit(-1)
 
     async def _setup_bridge(self, websession: ClientSession) -> None:
         """Connect to the Hue Bridge."""
@@ -119,26 +116,17 @@ class Hue2MQTT():
         LOGGER.info(f"Connecting to Hue Bridge at {self.config.hue.ip}")
         await self._bridge.initialize()
 
-    async def _publish_bridge_info(self, *, online: bool = True) -> None:
+    async def _publish_bridge_status(self, *, online: bool = True) -> None:
         """Publish info about the Hue Bridge."""
         if online:
             LOGGER.info(f"Bridge Name: {self._bridge.config.name}")
             LOGGER.info(f"Bridge MAC: {self._bridge.config.mac}")
             LOGGER.info(f"API Version: {self._bridge.config.apiversion}")
 
-            lights = {
-                int(k): LightInfo(id=k, **v.raw)
-                for k, v in self._bridge.lights._items.items()
-            }
-
-            for light in lights.values():
-                light.state = None
-
             info = BridgeInfo(
                 name=self._bridge.config.name,
                 mac_address=self._bridge.config.mac,
                 api_version=self._bridge.config.apiversion,
-                lights=lights,
             )
             message = Hue2MQTTStatus(online=online, bridge=info)
         else:
@@ -146,6 +134,28 @@ class Hue2MQTT():
 
         self._mqtt.publish("status", message)
 
+    def publish_light(self, light: LightInfo) -> None:
+        """Publish information about a light to MQTT."""
+        self._mqtt.publish(f"light/{light.uniqueid}", light, retain=True)
+
     async def main(self, websession: ClientSession) -> None:
         """Main method of the data component."""
-        await self._stop_event.wait()
+        # Publish initial info about lights
+        for id, light_raw in self._bridge.lights._items.items():
+            light = LightInfo(id=id, **light_raw.raw)
+            self.publish_light(light)
+
+        # Publish updates
+        try:
+            async for updated_object in self._bridge.listen_events():
+                if isinstance(updated_object, aiohue.groups.Group):
+                    print("Group: ", end="")
+                elif isinstance(updated_object, aiohue.lights.Light):
+                    light = LightInfo(id=updated_object.id, **updated_object.raw)
+                    self.publish_light(light)
+                elif isinstance(updated_object, aiohue.sensors.GenericSensor):
+                    print("Sensor: ", end="")
+                else:
+                    print("{}: {}".format(type(updated_object).__name__, updated_object))
+        except GeneratorExit:
+            LOGGER.warning("Exited loop")

@@ -1,9 +1,7 @@
 """Schemas for MQTT Messages."""
-from typing import Dict, Optional
+from typing import Optional
 
 from pydantic import BaseModel
-
-from .light import LightInfo
 
 
 class BridgeInfo(BaseModel):
@@ -12,8 +10,6 @@ class BridgeInfo(BaseModel):
     name: str
     mac_address: str
     api_version: str
-
-    lights: Dict[int, LightInfo]
 
 
 class Hue2MQTTStatus(BaseModel):
