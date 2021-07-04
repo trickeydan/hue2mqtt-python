@@ -13,13 +13,12 @@ from signal import SIGHUP, SIGINT, SIGTERM
 from types import FrameType
 from typing import Optional
 
-import aiohttp
 import aiohue
 from aiohttp.client import ClientSession
 
 from hue2mqtt import __version__
-from hue2mqtt.light import LightInfo
 from hue2mqtt.messages import BridgeInfo, Hue2MQTTStatus
+from hue2mqtt.schema import GroupInfo, LightInfo
 
 from .config import Hue2MQTTConfig
 from .mqtt.wrapper import MQTTWrapper
@@ -88,7 +87,7 @@ class Hue2MQTT():
         await self._mqtt.connect()
         LOGGER.info("Connected to MQTT Broker")
 
-        async with aiohttp.ClientSession() as websession:
+        async with ClientSession() as websession:
             try:
                 await self._setup_bridge(websession)
             except aiohue.errors.Unauthorized:
@@ -138,6 +137,10 @@ class Hue2MQTT():
         """Publish information about a light to MQTT."""
         self._mqtt.publish(f"light/{light.uniqueid}", light, retain=True)
 
+    def publish_group(self, group: GroupInfo) -> None:
+        """Publish information about a group to MQTT."""
+        self._mqtt.publish(f"group/{group.id}", group, retain=True)
+
     async def main(self, websession: ClientSession) -> None:
         """Main method of the data component."""
         # Publish initial info about lights
@@ -145,11 +148,17 @@ class Hue2MQTT():
             light = LightInfo(id=id, **light_raw.raw)
             self.publish_light(light)
 
+        # Publish initial info about groups
+        for id, group_raw in self._bridge.groups._items.items():
+            group = GroupInfo(id=id, **group_raw.raw)
+            self.publish_group(group)
+
         # Publish updates
         try:
             async for updated_object in self._bridge.listen_events():
                 if isinstance(updated_object, aiohue.groups.Group):
-                    print("Group: ", end="")
+                    group = GroupInfo(id=updated_object.id, **updated_object.raw)
+                    self.publish_group(group)
                 elif isinstance(updated_object, aiohue.lights.Light):
                     light = LightInfo(id=updated_object.id, **updated_object.raw)
                     self.publish_light(light)

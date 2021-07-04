@@ -1,7 +1,7 @@
 """Schemas for data about lights."""
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class LightState(BaseModel):
@@ -36,3 +36,25 @@ class LightInfo(BaseModel):
     type: str
 
     swversion: str
+
+
+class GroupState(BaseModel):
+    """The state of lights in a group."""
+
+    all_on: bool
+    any_on: bool
+
+
+class GroupInfo(BaseModel):
+    """Information about a light group."""
+
+    id: int
+    name: str
+    lights: List[int]
+    sensors: List[int]
+    type: str
+    state: GroupState
+
+    group_class: str = Field(..., alias="class")
+
+    action: LightState
