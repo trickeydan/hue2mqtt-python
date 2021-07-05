@@ -1,5 +1,6 @@
 """Schemas for data about lights."""
-from typing import List, Optional, Tuple
+from datetime import datetime
+from typing import Any, List, Optional, Tuple, Union
 
 from pydantic import BaseModel, Field
 
@@ -58,3 +59,83 @@ class GroupInfo(BaseModel):
     group_class: str = Field(..., alias="class")
 
     action: LightState
+
+
+class GenericSensorState(BaseModel):
+    """Information about the state of a sensor."""
+
+    lastupdated: datetime
+
+
+class PresenceSensorState(GenericSensorState):
+    """Information about the state of a sensor."""
+
+    presence: bool
+
+
+class RotarySensorState(GenericSensorState):
+    """Information about the state of a sensor."""
+
+    rotaryevent: str
+    expectedrotation: str
+    expectedeventduration: str
+
+
+class SwitchSensorState(GenericSensorState):
+    """Information about the state of a sensor."""
+
+    buttonevent: int
+
+
+class LightLevelSensorState(GenericSensorState):
+    """Information about the state of a sensor."""
+
+    dark: bool
+    daylight: bool
+    lightlevel: int
+
+
+class TemperatureSensorState(GenericSensorState):
+    """Information about the state of a sensor."""
+
+    temperature: int
+
+
+class HumiditySensorState(GenericSensorState):
+    """Information about the state of a sensor."""
+
+    humidity: int
+
+
+class OpenCloseSensorState(GenericSensorState):
+    """Information about the state of a sensor."""
+
+    open: str
+
+
+SensorState = Union[
+    PresenceSensorState,
+    RotarySensorState,
+    SwitchSensorState,
+    LightLevelSensorState,
+    TemperatureSensorState,
+    HumiditySensorState,
+    OpenCloseSensorState,
+]
+
+
+class SensorInfo(BaseModel):
+    """Information about a sensor."""
+
+    id: int
+    name: str
+    type: str
+    modelid: str
+    manufacturername: str
+
+    productname: str
+    uniqueid: str
+    swversion: Optional[str]
+
+    state: SensorState
+    capabilities: Any

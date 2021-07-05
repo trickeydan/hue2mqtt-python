@@ -18,7 +18,7 @@ from aiohttp.client import ClientSession
 
 from hue2mqtt import __version__
 from hue2mqtt.messages import BridgeInfo, Hue2MQTTStatus
-from hue2mqtt.schema import GroupInfo, LightInfo
+from hue2mqtt.schema import GroupInfo, LightInfo, SensorInfo
 
 from .config import Hue2MQTTConfig
 from .mqtt.wrapper import MQTTWrapper
@@ -141,6 +141,10 @@ class Hue2MQTT():
         """Publish information about a group to MQTT."""
         self._mqtt.publish(f"group/{group.id}", group, retain=True)
 
+    def publish_sensor(self, sensor: SensorInfo) -> None:
+        """Publish information about a group to MQTT."""
+        self._mqtt.publish(f"sensor/{sensor.uniqueid}", sensor, retain=True)
+
     async def main(self, websession: ClientSession) -> None:
         """Main method of the data component."""
         # Publish initial info about lights
@@ -153,6 +157,14 @@ class Hue2MQTT():
             group = GroupInfo(id=id, **group_raw.raw)
             self.publish_group(group)
 
+        # Publish initial info about sensors
+        for id, sensor_raw in self._bridge.sensors._items.items():
+            if "uniqueid" in sensor_raw.raw and "productname" in sensor_raw.raw:
+                sensor = SensorInfo(id=id, **sensor_raw.raw)
+                self.publish_sensor(sensor)
+            else:
+                LOGGER.debug(f"Ignoring virtual sensor: {sensor_raw.name}")
+
         # Publish updates
         try:
             async for updated_object in self._bridge.listen_events():
@@ -163,8 +175,9 @@ class Hue2MQTT():
                     light = LightInfo(id=updated_object.id, **updated_object.raw)
                     self.publish_light(light)
                 elif isinstance(updated_object, aiohue.sensors.GenericSensor):
-                    print("Sensor: ", end="")
+                    sensor = SensorInfo(id=updated_object.id, **updated_object.raw)
+                    self.publish_sensor(sensor)
                 else:
-                    print("{}: {}".format(type(updated_object).__name__, updated_object))
+                    LOGGER.warning("Unknown object")
         except GeneratorExit:
             LOGGER.warning("Exited loop")
