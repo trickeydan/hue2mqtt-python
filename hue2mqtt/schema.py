@@ -5,8 +5,8 @@ from typing import Any, List, Optional, Tuple, Union
 from pydantic import BaseModel, Field
 
 
-class LightSetState(BaseModel):
-    """The State of a light that we can set."""
+class LightBaseState(BaseModel):
+    """The base attributes of a light state."""
 
     on: Optional[bool]
 
@@ -20,7 +20,18 @@ class LightSetState(BaseModel):
     transitiontime: Optional[str]
 
 
-class LightState(LightSetState):
+class LightSetState(LightBaseState):
+    """The settable states of a light."""
+
+    bri_inc: Optional[int]
+    sat_inc: Optional[int]
+    hue_inc: Optional[int]
+    ct_inc: Optional[int]
+    xy_inc: Optional[int]
+    scene: Optional[str]
+
+
+class LightState(LightBaseState):
     """The State of a light that we can read."""
 
     reachable: Optional[bool]
