@@ -35,8 +35,6 @@ username = "some secret here"
 
 If you do not know the username for your bridge, find it using `hue2mqtt --discover`.
 
-## Protocol
-
 ## Bridge Status
 
 The status of Hue2MQTT is published to `hue2mqtt/status` as a JSON object:
@@ -92,6 +90,16 @@ e.g `hue2mqtt/sensor/00:17:88:01:ab:cd:ef:01-02`
 
 ```json
 {"id": 5, "name": "Hue ambient light sensor 1", "type": "ZLLLightLevel", "modelid": "SML001", "manufacturername": "Signify Netherlands B.V.", "productname": "Hue ambient light sensor", "uniqueid": "00:17:88:01:04:b7:b5:20-02-0400", "swversion": "6.1.1.27575", "state": {"lastupdated": "2021-07-10T12:28:17", "dark": true, "daylight": false, "lightlevel": 14606}, "capabilities": {"certified": true, "primary": false}}
+```
+
+## Controlling Hue
+
+Lights and Groups can be controlled by publishing objects to the `hue2mqtt/light/{{UNIQUEID}}/set` or `hue2mqtt/group/{{GROUPID}}/set` topics.
+
+The object should be a JSON object containing the state values that you wish to change.
+
+```json
+{"on": "true"}
 ```
 
 ## Contributions
