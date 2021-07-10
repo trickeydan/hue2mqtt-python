@@ -82,6 +82,7 @@ class Hue2MQTT():
         )
 
         self._mqtt.subscribe("light/+/set", self.handle_set_light)
+        self._mqtt.subscribe("group/+/set", self.handle_set_group)
 
     def _exit(self, signals: signal.Signals, frame_type: FrameType) -> None:
         sys.exit(0)
@@ -169,6 +170,24 @@ class Hue2MQTT():
                     LOGGER.warning(f"Invalid light state: {e}")
                 return
         LOGGER.warning(f"Unknown light uniqueid: {uniqueid}")
+
+    async def handle_set_group(self, match: Match[str], payload: str) -> None:
+        """Handle an update to a group."""
+        groupid = match.group(1)
+
+        try:
+            group = self._bridge.groups[groupid]
+            state = LightSetState(**json.loads(payload))
+            LOGGER.info(f"Updating group {group.name}")
+            await group.set_action(**state.dict())
+        except IndexError:
+            LOGGER.warning(f"Unknown group id: {groupid}")
+        except json.JSONDecodeError:
+            LOGGER.warning(f"Bad JSON on light request: {payload}")
+        except TypeError:
+            LOGGER.warning(f"Expected dictionary, got: {payload}")
+        except ValidationError as e:
+            LOGGER.warning(f"Invalid light state: {e}")
 
     async def main(self, websession: ClientSession) -> None:
         """Main method of the data component."""
