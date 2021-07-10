@@ -5,9 +5,9 @@ description = "Python Hue to MQTT Bridge"
 authors = ["Dan Trickey <contact@trickey.io>"]
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/"
-homepage = "https://github.com/"
-documentation = "https://readthedocs.io"
+repository = "https://github.com/trickeydan/hue2mqtt"
+homepage = "https://github.com/trickeydan/hue2mqtt"
+documentation = "https://github.com/trickeydan/hue2mqtt"
 classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Typing :: Typed",
