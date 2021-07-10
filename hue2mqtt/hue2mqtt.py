@@ -6,19 +6,21 @@ State Managers and Consumers. It handles connecting to the broker
 and managing the event loop.
 """
 import asyncio
+import json
 import logging
 import signal
 import sys
 from signal import SIGHUP, SIGINT, SIGTERM
 from types import FrameType
-from typing import Optional
+from typing import Match, Optional
 
 import aiohue
 from aiohttp.client import ClientSession
+from pydantic import ValidationError
 
 from hue2mqtt import __version__
 from hue2mqtt.messages import BridgeInfo, Hue2MQTTStatus
-from hue2mqtt.schema import GroupInfo, LightInfo, SensorInfo
+from hue2mqtt.schema import GroupInfo, LightInfo, LightSetState, SensorInfo
 
 from .config import Hue2MQTTConfig
 from .mqtt.wrapper import MQTTWrapper
@@ -78,6 +80,8 @@ class Hue2MQTT():
             self.config.mqtt,
             last_will=Hue2MQTTStatus(online=False),
         )
+
+        self._mqtt.subscribe("light/+/set", self.handle_set_light)
 
     def _exit(self, signals: signal.Signals, frame_type: FrameType) -> None:
         sys.exit(0)
@@ -144,6 +148,27 @@ class Hue2MQTT():
     def publish_sensor(self, sensor: SensorInfo) -> None:
         """Publish information about a group to MQTT."""
         self._mqtt.publish(f"sensor/{sensor.uniqueid}", sensor, retain=True)
+
+    async def handle_set_light(self, match: Match[str], payload: str) -> None:
+        """Handle an update to a light."""
+        uniqueid = match.group(1)
+
+        # Find the light with that uniqueid
+        for light_id in self._bridge.lights:
+            light = self._bridge.lights[light_id]
+            if light.uniqueid == uniqueid:
+                try:
+                    state = LightSetState(**json.loads(payload))
+                    LOGGER.info(f"Updating {light.name}")
+                    await light.set_state(**state.dict())
+                except json.JSONDecodeError:
+                    LOGGER.warning(f"Bad JSON on light request: {payload}")
+                except TypeError:
+                    LOGGER.warning(f"Expected dictionary, got: {payload}")
+                except ValidationError as e:
+                    LOGGER.warning(f"Invalid light state: {e}")
+                return
+        LOGGER.warning(f"Unknown light uniqueid: {uniqueid}")
 
     async def main(self, websession: ClientSession) -> None:
         """Main method of the data component."""
