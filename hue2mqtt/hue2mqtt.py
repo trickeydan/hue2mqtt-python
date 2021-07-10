@@ -20,7 +20,13 @@ from pydantic import ValidationError
 
 from hue2mqtt import __version__
 from hue2mqtt.messages import BridgeInfo, Hue2MQTTStatus
-from hue2mqtt.schema import GroupInfo, LightInfo, LightSetState, SensorInfo
+from hue2mqtt.schema import (
+    GroupInfo,
+    GroupSetState,
+    LightInfo,
+    LightSetState,
+    SensorInfo,
+)
 
 from .config import Hue2MQTTConfig
 from .mqtt.wrapper import MQTTWrapper
@@ -177,7 +183,7 @@ class Hue2MQTT():
 
         try:
             group = self._bridge.groups[groupid]
-            state = LightSetState(**json.loads(payload))
+            state = GroupSetState(**json.loads(payload))
             LOGGER.info(f"Updating group {group.name}")
             await group.set_action(**state.dict())
         except IndexError:

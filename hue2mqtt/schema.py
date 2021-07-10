@@ -28,6 +28,11 @@ class LightSetState(LightBaseState):
     hue_inc: Optional[int]
     ct_inc: Optional[int]
     xy_inc: Optional[int]
+
+
+class GroupSetState(LightSetState):
+    """The settable states of a group."""
+
     scene: Optional[str]
 
 
