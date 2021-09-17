@@ -27,6 +27,9 @@ class MQTTBrokerInfo(BaseModel):
 
     host: str
     port: int
+    enable_auth: bool = False
+    username: str = ""
+    password: str = ""
     enable_tls: bool = False
     topic_prefix: str = "hue2mqtt"
     force_protocol_version_3_1: bool = False
