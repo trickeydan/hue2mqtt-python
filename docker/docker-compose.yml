@@ -1,0 +1,10 @@
+version: '3.2'
+services:
+ hue2mqtt:
+    build:
+      dockerfile: Dockerfile
+      context: ./
+    container_name: hue2mqtt
+    restart: always
+    volumes:
+      - "./hue2mqtt.toml:/hue2mqtt-python/hue2mqtt.toml:ro"

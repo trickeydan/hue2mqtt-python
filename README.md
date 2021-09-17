@@ -102,6 +102,10 @@ The object should be a JSON object containing the state values that you wish to 
 {"on": "true"}
 ```
 
+## Docker
+
+Included is a basic Dockerfile and docker-compose example. 
+
 ## Contributions
 
 This project is released under the MIT Licence. For more information, please see LICENSE.
