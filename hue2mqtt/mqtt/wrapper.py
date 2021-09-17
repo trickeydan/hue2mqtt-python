@@ -82,7 +82,10 @@ class MQTTWrapper:
 
         if self._broker_info.enable_auth:
             LOGGER.debug("MQTT Auth enabled")
-            self._client.set_auth_credentials(self._broker_info.username,self._broker_info.password)
+            self._client.set_auth_credentials(
+                self._broker_info.username,
+                self._broker_info.password,
+            )
 
         await self._client.connect(
             self._broker_info.host,
