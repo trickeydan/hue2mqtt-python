@@ -26,6 +26,10 @@ port = 1883
 enable_tls = false
 force_protocol_version_3_1 = true
 
+enable_auth = false
+username = ""
+password = ""
+
 topic_prefix = "hue2mqtt"
 
 [hue]
