@@ -77,7 +77,7 @@ class GroupInfo(BaseModel):
     type: str
     state: GroupState
 
-    group_class: str = Field(..., alias="class")
+    group_class: Optional[str] = Field(..., alias="class")
 
     action: LightState
 
