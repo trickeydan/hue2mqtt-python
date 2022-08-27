@@ -39,6 +39,22 @@ username = "some secret here"
 
 If you do not know the username for your bridge, find it using `hue2mqtt --discover`.
 
+## Running Hue2MQTT
+
+Usually, it is as simple as running `hue2mqtt`.
+
+```
+Usage: hue2mqtt [OPTIONS]
+
+  Main function for Hue2MQTT.
+
+Options:
+  -v, --verbose
+  -c, --config-file PATH
+  --discover
+  --help                  Show this message and exit.
+```
+
 ## Bridge Status
 
 The status of Hue2MQTT is published to `hue2mqtt/status` as a JSON object:
