@@ -16,7 +16,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.8"
 gmqtt = "^0.6.10"
-aiohue = "^2.5.1"
+aiohue = "^4.5.0"
 pydantic = "^1.9.2"
 click = "^8.1.3"
 aiohttp = "^3.8.1"

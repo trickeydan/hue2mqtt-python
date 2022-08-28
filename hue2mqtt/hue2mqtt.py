@@ -15,7 +15,6 @@ from types import FrameType
 from typing import Match, Optional
 
 import aiohue
-from aiohttp.client import ClientSession
 from pydantic import ValidationError
 
 from hue2mqtt import __version__
@@ -98,15 +97,16 @@ class Hue2MQTT():
         await self._mqtt.connect()
         LOGGER.info("Connected to MQTT Broker")
 
-        async with ClientSession() as websession:
-            try:
-                await self._setup_bridge(websession)
-            except aiohue.errors.Unauthorized:
-                LOGGER.error("Bridge rejected username. Please use --discover")
-                self.halt()
-                return
-            await self._publish_bridge_status()
-            await self.main(websession)
+        LOGGER.info(f"Connecting to Hue Bridge at {self.config.hue.ip}")
+        try:
+            async with aiohue.HueBridgeV2(self.config.hue.ip, self.config.hue.username) as bridge:
+                self._bridge = bridge
+                await self._publish_bridge_status()
+                await self.main()
+        except aiohue.errors.Unauthorized:
+            LOGGER.error("Bridge rejected credentials. Please use --discover")
+            self.halt()
+            return
 
         LOGGER.info("Disconnecting from MQTT Broker")
         await self._publish_bridge_status(online=False)
@@ -116,27 +116,17 @@ class Hue2MQTT():
         """Stop the component."""
         sys.exit(-1)
 
-    async def _setup_bridge(self, websession: ClientSession) -> None:
-        """Connect to the Hue Bridge."""
-        self._bridge = aiohue.Bridge(
-            self.config.hue.ip,
-            websession,
-            username=self.config.hue.username,
-        )
-        LOGGER.info(f"Connecting to Hue Bridge at {self.config.hue.ip}")
-        await self._bridge.initialize()
-
     async def _publish_bridge_status(self, *, online: bool = True) -> None:
         """Publish info about the Hue Bridge."""
         if online:
             LOGGER.info(f"Bridge Name: {self._bridge.config.name}")
-            LOGGER.info(f"Bridge MAC: {self._bridge.config.mac}")
-            LOGGER.info(f"API Version: {self._bridge.config.apiversion}")
+            LOGGER.info(f"Bridge MAC: {self._bridge.config.mac_address}")
+            LOGGER.info(f"API Version: {self._bridge.config.software_version}")
 
             info = BridgeInfo(
                 name=self._bridge.config.name,
-                mac_address=self._bridge.config.mac,
-                api_version=self._bridge.config.apiversion,
+                mac_address=self._bridge.config.mac_address,
+                api_version=self._bridge.config.software_version,
             )
             message = Hue2MQTTStatus(online=online, bridge=info)
         else:
@@ -195,9 +185,10 @@ class Hue2MQTT():
         except ValidationError as e:
             LOGGER.warning(f"Invalid light state: {e}")
 
-    async def main(self, websession: ClientSession) -> None:
+    async def main(self) -> None:
         """Main method of the data component."""
         # Publish initial info about lights
+        breakpoint()
         for id, light_raw in self._bridge.lights._items.items():
             light = LightInfo(id=id, **light_raw.raw)
             self.publish_light(light)

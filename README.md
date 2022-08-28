@@ -11,6 +11,7 @@ Hue2MQTT lets you control your Hue setup using MQTT and publishes the current st
 - Control your lights using MQTT
 - Receive live events (i.e button pushes, motion sensors) in real-time.
 - No polling your Hue Bridge for changes
+- Only supports Hue Bridge v2 (square-shaped). The Hue Bridge v1 is End of Life since June 2020.
 - IPv6 Support
 
 ## Configuration
