@@ -1,0 +1,15 @@
+[mqtt]
+host = "::1"
+port = 1883
+enable_tls = false
+force_protocol_version_3_1 = true
+
+enable_auth = false
+username = ""
+password = ""
+
+topic_prefix = "hue2mqtt"
+
+[hue]
+ip = "192.168.1.100"  # or IPv6: "[2001:db0::1]"
+username = "foo"
