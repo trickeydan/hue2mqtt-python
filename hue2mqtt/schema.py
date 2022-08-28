@@ -105,7 +105,7 @@ class RotarySensorState(GenericSensorState):
 class SwitchSensorState(GenericSensorState):
     """Information about the state of a sensor."""
 
-    buttonevent: int
+    buttonevent: Optional[int]
 
 
 class LightLevelSensorState(GenericSensorState):
