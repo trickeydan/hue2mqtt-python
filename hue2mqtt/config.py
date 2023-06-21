@@ -83,4 +83,4 @@ class Hue2MQTTConfig(BaseModel):
     @classmethod
     def load_from_file(cls, fh: IO[bytes]) -> "Hue2MQTTConfig":
         """Load the config from a file."""
-        return parse_obj_as(cls, **tomllib.load(fh))
+        return parse_obj_as(cls, tomllib.load(fh))
