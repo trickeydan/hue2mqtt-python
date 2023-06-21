@@ -36,7 +36,7 @@ LOGGER = logging.getLogger(__name__)
 loop = asyncio.get_event_loop()
 
 
-class Hue2MQTT():
+class Hue2MQTT:
     """Hue to MQTT Bridge."""
 
     config: Hue2MQTTConfig
@@ -198,19 +198,19 @@ class Hue2MQTT():
     async def main(self, websession: ClientSession) -> None:
         """Main method of the data component."""
         # Publish initial info about lights
-        for id, light_raw in self._bridge.lights._items.items():
-            light = LightInfo(id=id, **light_raw.raw)
+        for idx, light_raw in self._bridge.lights._items.items():
+            light = LightInfo(id=idx, **light_raw.raw)
             self.publish_light(light)
 
         # Publish initial info about groups
-        for id, group_raw in self._bridge.groups._items.items():
-            group = GroupInfo(id=id, **group_raw.raw)
+        for idx, group_raw in self._bridge.groups._items.items():
+            group = GroupInfo(id=idx, **group_raw.raw)
             self.publish_group(group)
 
         # Publish initial info about sensors
-        for id, sensor_raw in self._bridge.sensors._items.items():
+        for idx, sensor_raw in self._bridge.sensors._items.items():
             if "uniqueid" in sensor_raw.raw and "productname" in sensor_raw.raw:
-                sensor = SensorInfo(id=id, **sensor_raw.raw)
+                sensor = SensorInfo(id=idx, **sensor_raw.raw)
                 self.publish_sensor(sensor)
             else:
                 LOGGER.debug(f"Ignoring virtual sensor: {sensor_raw.name}")

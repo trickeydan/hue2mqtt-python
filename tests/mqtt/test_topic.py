@@ -19,7 +19,7 @@ WILDCARD_TOPICS = [
 
 def test_topic_init() -> None:
     """Test that we can construct Topic objects."""
-    for parts, topic in BASIC_TOPICS:
+    for parts, _topic in BASIC_TOPICS:
         t = Topic(parts)
         assert isinstance(t, Topic)
 
@@ -38,7 +38,7 @@ def test_topic_str() -> None:
 def test_topic_repr() -> None:
     """Test repr."""
     t = Topic(["bees"])
-    assert repr(t) == "Topic(\"bees\")"
+    assert repr(t) == 'Topic("bees")'
 
 
 def test_topic_equality() -> None:
@@ -73,8 +73,7 @@ def test_topic_parse_no_slash() -> None:
     cases = [
         "foo/bar/",
         "/foo/bar",
-        "/foo/bar/"
-        "//",
+        "/foo/bar/" "//",
         "/",
         "",
     ]
@@ -101,7 +100,7 @@ def test_topic_regex() -> None:
         t = Topic(parts)
         assert t.regex == compile(f"^{topic}$")
 
-    for parts, topic, example in WILDCARD_TOPICS:
+    for parts, _, example in WILDCARD_TOPICS:
         t = Topic(parts)
         assert t.regex.match(example)
         assert not t.regex.match("u85932q4fds9/3£2####")
@@ -109,7 +108,7 @@ def test_topic_regex() -> None:
 
 def test_topic_match() -> None:
     """Test the match function."""
-    for parts, topic, example in WILDCARD_TOPICS:
+    for parts, _topic, example in WILDCARD_TOPICS:
         t = Topic(parts)
         assert t.match(example)
         assert not t.match("u85932q4fds9/3£2####")

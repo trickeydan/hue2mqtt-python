@@ -25,5 +25,7 @@ async def discover_bridge() -> None:
                 print("Your username is", bridge.username)
                 print("Please add these details to hue2mqtt.toml")
             except LinkButtonNotPressed:
-                print("Error: Press the link button on the bridge before running discovery")  # noqa: E501
+                print(
+                    "Error: Press the link button on the bridge before running discovery",
+                )
                 sys.exit(1)

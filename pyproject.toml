@@ -23,19 +23,12 @@ aiohttp = "^3.8.1"
 tomli = { version = "^2.0.1", python = "<=3.10" }
 
 [tool.poetry.dev-dependencies]
-flake8 = "*"
-flake8-commas = "*"
-flake8-comprehensions = "*"
-flake8-debugger = "*"
-flake8-docstrings = "*"
-flake8-isort = "*"
-flake8-mutable = "*"
-flake8-todo = "*"
+black = "*"
+ruff = "*"
 mypy = "*"
 pytest = "*"
 pytest-cov = "*"
 rope = "*"
-isort = {version = "*",extras = ["pyproject"]}
 pytest-asyncio = "^0.15.1"
 
 [tool.poetry.scripts]
@@ -44,3 +37,69 @@ hue2mqtt = 'hue2mqtt.app:app'
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+[tool.black]
+line-length = 90
+target-version = ['py38']
+
+[tool.mypy]
+mypy_path = "stubs"
+
+warn_unused_ignores = true
+warn_return_any = true
+
+strict_optional = true
+no_implicit_optional = true
+
+disallow_subclassing_any = true
+disallow_any_generics = true
+
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = ["gmqtt.*"]
+disallow_any_explicit = false
+
+[[tool.mypy.overrides]]
+module = ["aiohue.*"]
+ignore_missing_imports = true
+
+
+[tool.ruff]
+select = [
+    "A",
+    "ANN",
+    "B",
+    "BLE",
+    "C4",
+    "COM",
+    "DJ",
+    "DTZ",
+    "E",
+    "F",
+    "FBT",
+    "I",
+    "N",
+    "S",
+    "T10",
+    "UP",
+    "W",
+]
+ignore = [
+    "ANN101",  # Missing type annotation for `self` in method
+    "ANN102",  # Missing type annotation for `cls` in classmethod
+    "ANN401",  # Dynamically typed expressions (typing.Any) are disallowed
+    "B009",    # Do not call `getattr` with a constant attribute value.
+    "B027",    # an empty method in an abstract base class, but has no abstract decorator
+    "FBT001",  # Boolean positional arg in function definition
+    "N805",    # First argument of a method should be named `self`
+    "S101",    # S101 Use of `assert` detected
+]
+
+target-version = "py38"
+line-length = 90

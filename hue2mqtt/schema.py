@@ -46,7 +46,7 @@ class LightState(LightBaseState):
 class LightInfo(BaseModel):
     """Information about a light."""
 
-    id: int
+    id: int  # noqa: A003
     name: str
     uniqueid: str
     state: Optional[LightState]
@@ -54,7 +54,7 @@ class LightInfo(BaseModel):
     manufacturername: str
     modelid: str
     productname: str
-    type: str
+    type: str  # noqa: A003
 
     swversion: str
 
@@ -69,11 +69,11 @@ class GroupState(BaseModel):
 class GroupInfo(BaseModel):
     """Information about a light group."""
 
-    id: int
+    id: int  # noqa: A003
     name: str
     lights: List[int]
     sensors: List[int]
-    type: str
+    type: str  # noqa: A003
     state: GroupState
 
     group_class: Optional[str] = Field(default=None, alias="class")
@@ -130,7 +130,7 @@ class HumiditySensorState(GenericSensorState):
 class OpenCloseSensorState(GenericSensorState):
     """Information about the state of a sensor."""
 
-    open: Optional[str] = None
+    open: Optional[str] = None  # noqa: A003
 
 
 SensorState = create_model(
@@ -150,9 +150,9 @@ SensorState = create_model(
 class SensorInfo(BaseModel):
     """Information about a sensor."""
 
-    id: int
+    id: int  # noqa: A003
     name: str
-    type: str
+    type: str  # noqa: A003
     modelid: str
     manufacturername: str
 

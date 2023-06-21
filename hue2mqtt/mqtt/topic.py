@@ -28,7 +28,7 @@ class Topic:
         return self.regex.match(topic)
 
     @classmethod
-    def parse(cls, topic: str) -> 'Topic':
+    def parse(cls, topic: str) -> "Topic":
         """
         Parse a string topic into a Topic instance.
 
@@ -48,7 +48,7 @@ class Topic:
         return "/".join(str(p) for p in self.parts)
 
     def __repr__(self) -> str:
-        return f"Topic(\"{self}\")"
+        return f'Topic("{self}")'
 
     def __hash__(self) -> int:
         return hash(repr(self))

@@ -59,12 +59,12 @@ class Hue2MQTTConfig(BaseModel):
     @classmethod
     def _get_config_path(cls, config_str: Optional[str] = None) -> Path:
         """Check for a config file or search the filesystem for one."""
-        CONFIG_SEARCH_PATHS = [
+        config_search_paths = [
             Path("hue2mqtt.toml"),
             Path("/etc/hue2mqtt.toml"),
         ]
         if config_str is None:
-            for path in CONFIG_SEARCH_PATHS:
+            for path in config_search_paths:
                 if path.exists() and path.is_file():
                     return path
         else:
@@ -74,13 +74,13 @@ class Hue2MQTTConfig(BaseModel):
         raise FileNotFoundError("Unable to find config file.")
 
     @classmethod
-    def load(cls, config_str: Optional[str] = None) -> 'Hue2MQTTConfig':
+    def load(cls, config_str: Optional[str] = None) -> "Hue2MQTTConfig":
         """Load the config."""
         config_path = cls._get_config_path(config_str)
         with config_path.open("rb") as fh:
             return cls.load_from_file(fh)
 
     @classmethod
-    def load_from_file(cls, fh: IO[bytes]) -> 'Hue2MQTTConfig':
+    def load_from_file(cls, fh: IO[bytes]) -> "Hue2MQTTConfig":
         """Load the config from a file."""
         return cls(**tomllib.load(fh))
