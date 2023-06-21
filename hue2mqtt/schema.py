@@ -1,8 +1,7 @@
 """Schemas for data about lights."""
 from datetime import datetime
-from typing import Any, List, Optional, Tuple, Union
-
-from pydantic import BaseModel, Field
+from typing import Any, List, Optional, Tuple
+from pydantic import BaseModel, Field, create_model
 
 
 class LightBaseState(BaseModel):
@@ -85,65 +84,56 @@ class GroupInfo(BaseModel):
 class GenericSensorState(BaseModel):
     """Information about the state of a sensor."""
 
-    lastupdated: datetime
-
-
+    lastupdated: str = None
+        
+        
 class PresenceSensorState(GenericSensorState):
     """Information about the state of a sensor."""
 
-    presence: bool
+    presence: bool = None
 
 
 class RotarySensorState(GenericSensorState):
     """Information about the state of a sensor."""
 
-    rotaryevent: str
-    expectedrotation: str
-    expectedeventduration: str
+    rotaryevent: str = None
+    expectedrotation: str = None
+    expectedeventduration: str = None
 
 
 class SwitchSensorState(GenericSensorState):
     """Information about the state of a sensor."""
 
-    buttonevent: Optional[int]
+    buttonevent: int = None
 
 
 class LightLevelSensorState(GenericSensorState):
     """Information about the state of a sensor."""
 
-    dark: bool
-    daylight: bool
-    lightlevel: int
+    dark: bool = None
+    daylight: bool = None
+    lightlevel: int = None
 
 
 class TemperatureSensorState(GenericSensorState):
     """Information about the state of a sensor."""
 
-    temperature: int
+    temperature: int = None
 
 
 class HumiditySensorState(GenericSensorState):
     """Information about the state of a sensor."""
 
-    humidity: int
+    humidity: int = None
 
 
 class OpenCloseSensorState(GenericSensorState):
     """Information about the state of a sensor."""
 
-    open: str
+    open: str = None
 
 
-SensorState = Union[
-    PresenceSensorState,
-    RotarySensorState,
-    SwitchSensorState,
-    LightLevelSensorState,
-    TemperatureSensorState,
-    HumiditySensorState,
-    OpenCloseSensorState,
-]
-
+SensorState = create_model("SensorState", __base__=(LightLevelSensorState, PresenceSensorState, RotarySensorState, SwitchSensorState, TemperatureSensorState, HumiditySensorState, OpenCloseSensorState))
 
 class SensorInfo(BaseModel):
     """Information about a sensor."""
