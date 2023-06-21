@@ -62,7 +62,7 @@ class Client:
     @on_connect.setter
     def on_connect(self, f: Callable[[Client, int, int, Dict[str, List[int]]], None]) -> None: ...
 
-    @property
+    @property  # type: ignore[misc]
     def on_connect(self) -> Callable[[Client, int, int, Dict[str, List[int]]], None]: ...
 
     @on_connect.setter
