@@ -10,7 +10,7 @@ from pydantic import BaseModel
 
 # Backwards compatibility for TOML in stdlib from Python 3.11
 try:
-    import tomllib  # type: ignore[import]
+    import tomllib  # type: ignore[import,unused-ignore]
 except ModuleNotFoundError:
     import tomli as tomllib  # type: ignore[no-redef]
 
