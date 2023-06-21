@@ -164,7 +164,7 @@ class MQTTWrapper:
 
         self._client.publish(
             str(topic_complete),
-            payload.json(by_alias=True),
+            payload.json(by_alias=True, exclude_none=True),
             qos=1,
             retain=retain,
         )
