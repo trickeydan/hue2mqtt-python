@@ -1,6 +1,8 @@
 # Hue2MQTT Default Config File
 
 [mqtt]
+# use host.docker.internal to connect to mqtt broker installed on docker host
+# host = "host.docker.internal"
 host = "::1"
 port = 1883
 enable_tls = false

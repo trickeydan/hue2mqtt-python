@@ -21,6 +21,8 @@ Hue2MQTT is configured using `hue2mqtt.toml`.
 # Hue2MQTT Default Config File
 
 [mqtt]
+# use host.docker.internal to connect to mqtt broker installed on docker host
+# host = "host.docker.internal"
 host = "::1"
 port = 1883
 enable_tls = false
@@ -125,6 +127,14 @@ The object should be a JSON object containing the state values that you wish to 
 ## Docker
 
 Included is a basic Dockerfile and docker-compose example. 
+
+### Connections to Docker Host
+
+To establish a MQTT-Connection to the Docker Host (localhost is the docker instance) use host.docker.internal inside hue2mqtt.toml
+
+```toml
+host = "host.docker.internal"
+```
 
 ## Contributions
 

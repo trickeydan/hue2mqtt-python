@@ -8,3 +8,5 @@ services:
     restart: always
     volumes:
       - "./hue2mqtt.toml:/hue2mqtt-python/hue2mqtt.toml:ro"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
