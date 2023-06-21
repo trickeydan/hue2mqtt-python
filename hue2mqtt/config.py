@@ -12,7 +12,7 @@ from pydantic import BaseModel, parse_obj_as
 try:
     import tomllib  # type: ignore[import,unused-ignore]
 except ModuleNotFoundError:
-    import tomli as tomllib  # type: ignore[no-redef,unused-ignore]
+    import tomli as tomllib  # type: ignore[import,no-redef,unused-ignore]
 
 
 class HueBridgeInfo(BaseModel):
