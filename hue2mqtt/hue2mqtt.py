@@ -16,7 +16,7 @@ from typing import Match, Optional
 
 import aiohue
 from aiohttp.client import ClientSession
-from pydantic import ValidationError
+from pydantic import ValidationError, parse_obj_as
 
 from hue2mqtt import __version__
 from hue2mqtt.messages import BridgeInfo, Hue2MQTTStatus
@@ -165,7 +165,7 @@ class Hue2MQTT:
             light = self._bridge.lights[light_id]
             if light.uniqueid == uniqueid:
                 try:
-                    state = LightSetState(**json.loads(payload))
+                    state = parse_obj_as(LightSetState, json.loads(payload))
                     LOGGER.info(f"Updating {light.name}")
                     await light.set_state(**state.dict())
                 except json.JSONDecodeError:
@@ -183,7 +183,7 @@ class Hue2MQTT:
 
         try:
             group = self._bridge.groups[groupid]
-            state = GroupSetState(**json.loads(payload))
+            state = parse_obj_as(GroupSetState, json.loads(payload))
             LOGGER.info(f"Updating group {group.name}")
             await group.set_action(**state.dict())
         except IndexError:

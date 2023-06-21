@@ -6,7 +6,7 @@ Common to all components.
 from pathlib import Path
 from typing import IO, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, parse_obj_as
 
 # Backwards compatibility for TOML in stdlib from Python 3.11
 try:
@@ -83,4 +83,4 @@ class Hue2MQTTConfig(BaseModel):
     @classmethod
     def load_from_file(cls, fh: IO[bytes]) -> "Hue2MQTTConfig":
         """Load the config from a file."""
-        return cls(**tomllib.load(fh))
+        return parse_obj_as(cls, **tomllib.load(fh))
