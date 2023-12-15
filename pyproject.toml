@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hue2mqtt"
-version = "0.4.1"
+version = "0.4.2"
 description = "Python Hue to MQTT Bridge"
 authors = ["Dan Trickey <contact@trickey.io>"]
 license = "MIT"
