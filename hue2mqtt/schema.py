@@ -15,7 +15,7 @@ class LightBaseState(BaseModel):
     effect: Optional[str]
     hue: Optional[int]
     sat: Optional[int]
-    xy: Optional[Tuple[int, int]]
+    xy: Optional[Tuple[float, float]]
     transitiontime: Optional[str]
 
 
@@ -26,7 +26,7 @@ class LightSetState(LightBaseState):
     sat_inc: Optional[int]
     hue_inc: Optional[int]
     ct_inc: Optional[int]
-    xy_inc: Optional[int]
+    xy_inc: Optional[Tuple[float, float]]
 
 
 class GroupSetState(LightSetState):
